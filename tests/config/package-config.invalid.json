@@ -1,0 +1,21 @@
+[
+  {
+    "package": "package1",
+    "version": "1.0.0",
+    "release": {
+      "owner": "owner1",
+      "repo": "repo1",
+      "token": "token1"
+    }
+  },
+  {
+    "package": "package2",
+    "version": "2.0.0",
+    "file_url": "url2"
+  },
+  {
+    "package": "package3",
+    "version": "3.0.0",
+    "tag": "v3.0.0"
+  }
+]
