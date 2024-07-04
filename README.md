@@ -60,7 +60,7 @@ $ bin/debian-package-downloader.py --help
 usage: debian-package-downloader.py [-h] [-f LOG_FILE] [-l LOG_LEVEL] [-d DOWNLOAD] package_config
 
 positional arguments:
-  package_config        package config JSON file
+  package_config        package config JSON file path or URL
 
 options:
   -h, --help            show this help message and exit

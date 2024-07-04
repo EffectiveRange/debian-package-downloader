@@ -15,3 +15,9 @@ def delete_directory(directory: str) -> None:
 def create_directory(directory: str) -> None:
     if not os.path.isdir(directory):
         os.makedirs(directory, exist_ok=True)
+
+
+def create_file(file: str, content: str = '\n') -> None:
+    create_directory(os.path.dirname(file))
+    with open(file, 'w') as f:
+        f.write(content)
