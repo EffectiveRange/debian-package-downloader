@@ -30,8 +30,7 @@ class FileDownloader(IFileDownloader):
     def download(self, file_url: str, file_name: Optional[str] = None, headers: Optional[dict[str, str]] = None,
                  skip_if_exists: bool = True, chunk_size: int = 1000 * 1000) -> str:
         if not urlparse(file_url).scheme:
-            self._check_local_file(file_url)
-            return file_url
+            return self._check_local_file(file_url)
 
         file_path = self._get_download_path(file_url, file_name)
 
@@ -51,11 +50,13 @@ class FileDownloader(IFileDownloader):
 
         return file_path
 
-    def _check_local_file(self, file_url: str) -> None:
-        if os.path.isfile(file_url):
-            log.info('Local file path provided, skipping download', file=file_url)
+    def _check_local_file(self, file_url: str) -> str:
+        file_path = os.path.abspath(file_url)
+        if os.path.isfile(file_path):
+            log.info('Local file path provided, skipping download', file=file_path)
+            return file_path
         else:
-            log.error('Local file does not exist', file=file_url)
+            log.error('Local file does not exist', file=file_path)
             raise ValueError('Local file does not exist')
 
     def _send_request(self, file_url: str, headers: dict[str, str]) -> Response:
