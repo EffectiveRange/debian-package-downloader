@@ -4,6 +4,7 @@
 
 import os
 from typing import Optional
+from urllib.parse import urlparse
 
 from context_logger import get_logger
 from requests import Response
@@ -28,6 +29,10 @@ class FileDownloader(IFileDownloader):
 
     def download(self, file_url: str, file_name: Optional[str] = None, headers: Optional[dict[str, str]] = None,
                  skip_if_exists: bool = True, chunk_size: int = 1000 * 1000) -> str:
+        if not urlparse(file_url).scheme:
+            self._check_local_file(file_url)
+            return file_url
+
         file_path = self._get_download_path(file_url, file_name)
 
         if skip_if_exists and os.path.isfile(file_path):
@@ -45,6 +50,13 @@ class FileDownloader(IFileDownloader):
         log.info('Downloaded file', file=file_path)
 
         return file_path
+
+    def _check_local_file(self, file_url: str) -> None:
+        if os.path.isfile(file_url):
+            log.info('Local file path provided, skipping download', file=file_url)
+        else:
+            log.error('Local file does not exist', file=file_url)
+            raise ValueError('Local file does not exist')
 
     def _send_request(self, file_url: str, headers: dict[str, str]) -> Response:
         with self._session_provider.get_session() as session:

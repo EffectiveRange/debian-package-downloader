@@ -6,7 +6,7 @@ from context_logger import setup_logging
 from requests import Session, Response
 
 from package_downloader import ISessionProvider, FileDownloader
-from tests import TEST_FILE_SYSTEM_ROOT, delete_directory, create_directory
+from tests import TEST_FILE_SYSTEM_ROOT, delete_directory, create_directory, create_file
 
 
 class FileDownloaderTest(TestCase):
@@ -18,7 +18,7 @@ class FileDownloaderTest(TestCase):
 
     def setUp(self):
         print()
-        delete_directory(self.DOWNLOAD_LOCATION)
+        delete_directory(TEST_FILE_SYSTEM_ROOT)
 
     def test_download_returns_downloaded_file_path(self):
         # Given
@@ -26,10 +26,10 @@ class FileDownloaderTest(TestCase):
         file_downloader = FileDownloader(session_provider, self.DOWNLOAD_LOCATION)
 
         # When
-        result = file_downloader.download('url1/package1.deb')
+        result = file_downloader.download('http://url1/package1.deb')
 
         # Then
-        session.get.assert_called_once_with('url1/package1.deb', stream=True, headers={})
+        session.get.assert_called_once_with('http://url1/package1.deb', stream=True, headers={})
         self.assertEqual(f'{self.DOWNLOAD_LOCATION}/package1.deb', result)
         with open(f'{self.DOWNLOAD_LOCATION}/package1.deb', 'rb') as file:
             self.assertEqual(b'content', file.read())
@@ -41,10 +41,10 @@ class FileDownloaderTest(TestCase):
         file_downloader = FileDownloader(session_provider, self.DOWNLOAD_LOCATION)
 
         # When
-        result = file_downloader.download('url1/package1.deb', 'test_package1.deb')
+        result = file_downloader.download('http://url1/package1.deb', 'test_package1.deb')
 
         # Then
-        session.get.assert_called_once_with('url1/package1.deb', stream=True, headers={})
+        session.get.assert_called_once_with('http://url1/package1.deb', stream=True, headers={})
         self.assertEqual(f'{self.DOWNLOAD_LOCATION}/test_package1.deb', result)
         with open(f'{self.DOWNLOAD_LOCATION}/test_package1.deb', 'rb') as file:
             self.assertEqual(b'content', file.read())
@@ -56,22 +56,23 @@ class FileDownloaderTest(TestCase):
         file_downloader = FileDownloader(session_provider, self.DOWNLOAD_LOCATION)
 
         # When
-        result = file_downloader.download('url1/package1.deb', headers={'header1': 'value1', 'header2': 'value2'})
+        result = file_downloader.download('http://url1/package1.deb',
+                                          headers={'header1': 'value1', 'header2': 'value2'})
 
         # Then
-        session.get.assert_called_once_with('url1/package1.deb', stream=True,
+        session.get.assert_called_once_with('http://url1/package1.deb', stream=True,
                                             headers={'header1': 'value1', 'header2': 'value2'})
         self.assertEqual(f'{self.DOWNLOAD_LOCATION}/package1.deb', result)
         with open(f'{self.DOWNLOAD_LOCATION}/package1.deb', 'rb') as file:
             self.assertEqual(file_content, file.read())
 
-    def test_raises_error_when_fails_to_download_file(self):
+    def test_download_raises_error_when_fails_to_download_file(self):
         # Given
         session, session_provider = create_components(401, 'Unauthorized')
         file_downloader = FileDownloader(session_provider, self.DOWNLOAD_LOCATION)
 
         # When
-        self.assertRaises(ValueError, file_downloader.download, 'url1/package1.deb')
+        self.assertRaises(ValueError, file_downloader.download, 'http://url1/package1.deb')
 
         # Then
         # Exception raised
@@ -80,11 +81,11 @@ class FileDownloaderTest(TestCase):
         # Given
         session, session_provider = create_components()
         file_downloader = FileDownloader(session_provider, self.DOWNLOAD_LOCATION)
-        file_downloader.download('url1/package1.deb')
+        file_downloader.download('http://url1/package1.deb')
         session.reset_mock()
 
         # When
-        result = file_downloader.download('url1/package1.deb')
+        result = file_downloader.download('http://url1/package1.deb')
 
         # Then
         session.get.assert_not_called()
@@ -94,15 +95,40 @@ class FileDownloaderTest(TestCase):
         # Given
         session, session_provider = create_components()
         file_downloader = FileDownloader(session_provider, self.DOWNLOAD_LOCATION)
-        file_downloader.download('url1/package1.deb')
+        file_downloader.download('http://url1/package1.deb')
         session.reset_mock()
 
         # When
-        result = file_downloader.download('url1/package1.deb', skip_if_exists=False)
+        result = file_downloader.download('http://url1/package1.deb', skip_if_exists=False)
 
         # Then
-        session.get.assert_called_once_with('url1/package1.deb', stream=True, headers={})
+        session.get.assert_called_once_with('http://url1/package1.deb', stream=True, headers={})
         self.assertEqual(f'{self.DOWNLOAD_LOCATION}/package1.deb', result)
+
+    def test_download_returns_local_file_path_when_local_file_is_present(self):
+        # Given
+        file_path = f'{TEST_FILE_SYSTEM_ROOT}/tmp/package1.deb'
+        create_file(file_path)
+        session, session_provider = create_components()
+        file_downloader = FileDownloader(session_provider, self.DOWNLOAD_LOCATION)
+
+        # When
+        result = file_downloader.download(file_path)
+
+        # Then
+        self.assertEqual(file_path, result)
+
+    def test_download_raises_error_when_local_file_is_not_present(self):
+        # Given
+        file_path = f'{TEST_FILE_SYSTEM_ROOT}/tmp/package1.deb'
+        session, session_provider = create_components()
+        file_downloader = FileDownloader(session_provider, self.DOWNLOAD_LOCATION)
+
+        # When
+        self.assertRaises(ValueError, file_downloader.download, file_path)
+
+        # Then
+        # Exception raised
 
 
 def create_components(status_code: int = 200, reason: str = 'OK', content: bytes = b'content'):
