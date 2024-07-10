@@ -11,8 +11,8 @@ from pydantic import BaseModel
 class ReleaseConfig(BaseModel):
     owner: str
     repo: str
-    tag: str
-    matcher: str
+    tag: str = 'latest'
+    matcher: str = '*.deb'
     token: Optional[str] = None
 
     def __repr__(self) -> str:

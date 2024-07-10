@@ -52,7 +52,7 @@ class DebDownloaderTest(TestCase):
         file_downloader.download.assert_not_called()
         repository_provider.get_repository.assert_called_once_with(release_config)
         repository.get_release.assert_called_once_with('v1.0.0')
-        release_downloader.download.assert_called_once_with(release_config, release)
+        release_downloader.download.assert_called_once_with(release_config, release, first_match_only=True)
 
     def test_raises_error_when_no_download_source_configured(self):
         # Given
@@ -91,12 +91,12 @@ def create_components(repository: Optional[Repository] = None, release: Optional
     repository_provider = MagicMock(spec=IRepositoryProvider)
     repository_provider.get_repository.return_value = repository
 
-    release_downloader = MagicMock(spec=IAssetDownloader)
-    release_downloader.download.return_value = '/opt/debs/package2.deb'
+    asset_downloader = MagicMock(spec=IAssetDownloader)
+    asset_downloader.download.return_value = ['/opt/debs/package2.deb']
 
     file_downloader = MagicMock(spec=IFileDownloader)
     file_downloader.download.return_value = '/opt/debs/package1.deb'
-    return repository_provider, release_downloader, file_downloader
+    return repository_provider, asset_downloader, file_downloader
 
 
 if __name__ == '__main__':

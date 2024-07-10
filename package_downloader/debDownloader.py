@@ -20,10 +20,10 @@ class IDebDownloader(object):
 
 class DebDownloader(IDebDownloader):
 
-    def __init__(self, repository_provider: IRepositoryProvider, release_downloader: IAssetDownloader,
+    def __init__(self, repository_provider: IRepositoryProvider, asset_downloader: IAssetDownloader,
                  file_downloader: IFileDownloader):
         self._repository_provider = repository_provider
-        self._release_downloader = release_downloader
+        self._asset_downloader = asset_downloader
         self._file_downloader = file_downloader
 
     def download(self, config: PackageConfig) -> Optional[str]:
@@ -36,7 +36,7 @@ class DebDownloader(IDebDownloader):
         if not package_file and (release_config := config.release):
             log.info('Downloading package file from release', package=config.package, release=release_config)
             release = self._get_release(release_config)
-            package_file = self._release_downloader.download(release_config, release)
+            package_file = self._asset_downloader.download(release_config, release, first_match_only=True)[0]
 
         if not package_file:
             log.error('No download source configured', config=config)
