@@ -35,10 +35,11 @@ class JsonLoaderTest(TestCase):
         self.assertIsNone(config_1.file_url)
         self.assertEqual(config_1.release.owner, 'owner1')
         self.assertEqual(config_1.release.repo, 'repo1')
+        self.assertEqual(config_1.release.full_name, 'owner1/repo1')
         self.assertEqual(config_1.release.tag, 'v1.0.0')
         self.assertEqual(config_1.release.token, 'token1')
-        self.assertEqual(config_1.release.get_token(), 'token1')
-        self.assertEqual(config_1.release.matcher, '*.deb')
+        self.assertEqual(config_1.release.raw_token, 'token1')
+        self.assertEqual(config_1.release.matcher, '*')
         config_2 = config_list[1]
         self.assertEqual(config_2.package, 'package2')
         self.assertEqual(config_2.version, '2.0.0')
@@ -50,9 +51,10 @@ class JsonLoaderTest(TestCase):
         self.assertIsNone(config_3.file_url)
         self.assertEqual(config_3.release.owner, 'owner3')
         self.assertEqual(config_3.release.repo, 'repo3')
+        self.assertEqual(config_3.release.full_name, 'owner3/repo3')
         self.assertEqual(config_3.release.tag, 'v3.0.0')
         self.assertEqual(config_3.release.token, '$TEST_TOKEN')
-        self.assertEqual(config_3.release.get_token(), 'test_token')
+        self.assertEqual(config_3.release.raw_token, 'test_token')
         self.assertEqual(config_3.release.matcher, '*.deb')
         config_4 = config_list[3]
         self.assertEqual(config_4.package, 'package4')
@@ -60,9 +62,10 @@ class JsonLoaderTest(TestCase):
         self.assertEqual(config_4.file_url, 'url4')
         self.assertEqual(config_4.release.owner, 'owner4')
         self.assertEqual(config_4.release.repo, 'repo4')
-        self.assertEqual(config_4.release.tag, 'v4.0.0')
+        self.assertEqual(config_4.release.full_name, 'owner4/repo4')
+        self.assertIsNone(config_4.release.tag)
         self.assertIsNone(config_4.release.token)
-        self.assertIsNone(config_4.release.get_token())
+        self.assertIsNone(config_4.release.raw_token)
         self.assertEqual(config_4.release.matcher, '*.deb')
 
     def test_returns_object_when_json_file_is_schema_valid(self):
@@ -78,9 +81,10 @@ class JsonLoaderTest(TestCase):
         self.assertIsNone(config.file_url)
         self.assertEqual(config.release.owner, 'owner1')
         self.assertEqual(config.release.repo, 'repo1')
+        self.assertEqual(config.release.full_name, 'owner1/repo1')
         self.assertEqual(config.release.tag, 'v1.0.0')
         self.assertEqual(config.release.token, 'token1')
-        self.assertEqual(config.release.get_token(), 'token1')
+        self.assertEqual(config.release.raw_token, 'token1')
         self.assertEqual(config.release.matcher, '*.deb')
 
     def test_returns_object_when_json_string_is_schema_valid(self):
@@ -108,9 +112,10 @@ class JsonLoaderTest(TestCase):
         self.assertIsNone(config.file_url)
         self.assertEqual(config.release.owner, 'owner1')
         self.assertEqual(config.release.repo, 'repo1')
+        self.assertEqual(config.release.full_name, 'owner1/repo1')
         self.assertEqual(config.release.tag, 'v1.0.0')
         self.assertEqual(config.release.token, 'token1')
-        self.assertEqual(config.release.get_token(), 'token1')
+        self.assertEqual(config.release.raw_token, 'token1')
         self.assertEqual(config.release.matcher, '*.deb')
 
     def test_raises_error_when_json_file_is_schema_invalid(self):

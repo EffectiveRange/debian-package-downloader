@@ -6,8 +6,7 @@
       "owner": "owner1",
       "repo": "repo1",
       "tag": "v1.0.0",
-      "token": "token1",
-      "matcher": "*.deb"
+      "token": "token1"
     }
   },
   {
@@ -31,7 +30,6 @@
     "release": {
       "owner": "owner4",
       "repo": "repo4",
-      "tag": "v4.0.0",
       "matcher": "*.deb"
     }
   }

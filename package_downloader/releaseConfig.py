@@ -11,15 +11,21 @@ from pydantic import BaseModel
 class ReleaseConfig(BaseModel):
     owner: str
     repo: str
-    tag: str = 'latest'
-    matcher: str = '*.deb'
+    matcher: str = '*'
+    tag: Optional[str] = None
     token: Optional[str] = None
 
     def __repr__(self) -> str:
-        return (f'ReleaseConfig({self.owner}/{self.repo}.git@{self.tag}, '
-                f'matcher={self.matcher}, has_token={self.token is not None})')
+        tag = f'@{self.tag}' if self.tag else ''
+        has_token = self.raw_token is not None
+        return f'ReleaseConfig({self.full_name}.git{tag}, matcher={self.matcher}, has_token={has_token})'
 
-    def get_token(self) -> Optional[str]:
+    @property
+    def raw_token(self) -> Optional[str]:
         if self.token and self.token.startswith('$'):
             return os.getenv(self.token[1:], None)
         return self.token
+
+    @property
+    def full_name(self) -> str:
+        return f'{self.owner}/{self.repo}'
