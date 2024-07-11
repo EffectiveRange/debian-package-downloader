@@ -21,12 +21,9 @@ class IRepositoryProvider(object):
 class RepositoryProvider(IRepositoryProvider):
 
     def get_repository(self, config: ReleaseConfig) -> Repository:
-        repo_name = f'{config.owner}/{config.repo}'
-
         try:
-            token = config.get_token()
-            auth = Token(token) if token else None
-            return Github(auth=auth).get_repo(repo_name)
+            auth = Token(config.raw_token) if config.raw_token else None
+            return Github(auth=auth).get_repo(config.full_name)
         except Exception as error:
-            log.error('Error while getting repository', error=error, repository=repo_name)
+            log.error('Error while getting repository', error=error, repository=config.full_name)
             raise error

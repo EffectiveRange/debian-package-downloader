@@ -44,17 +44,20 @@ class DebDownloader(IDebDownloader):
 
         return package_file
 
-    def _get_release(self, release_config: ReleaseConfig) -> GitRelease:
-        repository = self._repository_provider.get_repository(release_config)
+    def _get_release(self, config: ReleaseConfig) -> GitRelease:
+        repository = self._repository_provider.get_repository(config)
 
-        log.debug('Getting release from repository', repo=repository.name, tag=release_config.tag)
+        log.debug('Getting release from repository', repo=repository.full_name, tag=config.tag)
 
-        release = repository.get_release(release_config.tag)
+        if config.tag:
+            release = repository.get_release(config.tag)
+        else:
+            release = repository.get_latest_release()
 
         if not release:
-            log.error('Release not found for tag', repo=repository.name, tag=release_config.tag)
+            log.error('Release not found for tag', repo=repository.full_name, tag=config.tag)
             raise ValueError('Release not found')
 
-        log.info('Found release for tag', repo=repository.name, tag=release_config.tag)
+        log.info('Found release for tag', repo=repository.full_name, tag=release.tag_name)
 
         return release

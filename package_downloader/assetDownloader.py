@@ -38,7 +38,7 @@ class AssetDownloader(IAssetDownloader):
             if fnmatch.fnmatch(asset.name, config.matcher):
                 log.info('Found matching asset', release=config, asset=asset.name)
 
-                downloaded_files.append(self._download_asset(asset, config.get_token()))
+                downloaded_files.append(self._download_asset(asset, config.raw_token))
 
                 if first_match_only:
                     break

@@ -20,7 +20,7 @@ class AssetDownloaderTest(TestCase):
 
     def test_returns_downloaded_files_paths_when_assets_found(self):
         # Given
-        file_downloader, release = create_components()
+        file_downloader, release = create_components(['/opt/debs/package1.deb', '/opt/debs/package2.deb'])
         asset_downloader = AssetDownloader(file_downloader)
         config = ReleaseConfig(owner='owner1', repo='repo1', tag='v1.0.0', matcher='*.deb', token='token1')
 
@@ -38,7 +38,7 @@ class AssetDownloaderTest(TestCase):
 
     def test_returns_downloaded_file_path_when_assets_founds_and_no_token_specified(self):
         # Given
-        file_downloader, release = create_components()
+        file_downloader, release = create_components(['/opt/debs/package1.deb', '/opt/debs/package2.deb'])
         asset_downloader = AssetDownloader(file_downloader)
         config = ReleaseConfig(owner='owner1', repo='repo1', tag='v1.0.0', matcher='*.deb')
 
@@ -54,9 +54,30 @@ class AssetDownloaderTest(TestCase):
             mock.call('url3', 'package2.deb', {'Accept': 'application/octet-stream'})
         ])
 
+    def test_downloads_all_files_when_no_matcher_is_specified(self):
+        # Given
+        file_downloader, release = create_components(
+            ['/opt/debs/package1.whl', '/opt/debs/package1.deb', '/opt/debs/package2.deb'])
+        asset_downloader = AssetDownloader(file_downloader)
+        config = ReleaseConfig(owner='owner1', repo='repo1', tag='v1.0.0', token='token1')
+
+        # When
+        result = asset_downloader.download(config, release, skip_if_exists=False)
+
+        # Then
+        self.assertEqual(3, len(result))
+        self.assertEqual('/opt/debs/package1.whl', result[0])
+        self.assertEqual('/opt/debs/package1.deb', result[1])
+        self.assertEqual('/opt/debs/package2.deb', result[2])
+        file_downloader.download.assert_has_calls([
+            mock.call('url1', 'package1.whl', {'Accept': 'application/octet-stream', 'Authorization': 'token token1'}),
+            mock.call('url2', 'package1.deb', {'Accept': 'application/octet-stream', 'Authorization': 'token token1'}),
+            mock.call('url3', 'package2.deb', {'Accept': 'application/octet-stream', 'Authorization': 'token token1'})
+        ])
+
     def test_returns_downloaded_file_path_when_asset_found_and_first_match_only(self):
         # Given
-        file_downloader, release = create_components()
+        file_downloader, release = create_components(['/opt/debs/package1.deb'])
         asset_downloader = AssetDownloader(file_downloader)
         config = ReleaseConfig(owner='owner1', repo='repo1', tag='v1.0.0', matcher='*.deb', token='token1')
 
@@ -81,9 +102,11 @@ class AssetDownloaderTest(TestCase):
         # Error raised
 
 
-def create_components():
+def create_components(downloaded_files=None):
+    if downloaded_files is None:
+        downloaded_files = []
     file_downloader = MagicMock(spec=IFileDownloader)
-    file_downloader.download.side_effect = ['/opt/debs/package1.deb', '/opt/debs/package2.deb']
+    file_downloader.download.side_effect = downloaded_files
     release = MagicMock(spec=GitRelease)
     asset1 = MagicMock(spec=GitReleaseAsset)
     asset1.name = 'package1.whl'
