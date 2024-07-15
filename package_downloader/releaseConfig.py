@@ -11,7 +11,7 @@ from pydantic import BaseModel
 class ReleaseConfig(BaseModel):
     owner: str
     repo: str
-    matcher: str = '*'
+    matcher: str = '*.deb'
     tag: Optional[str] = None
     token: Optional[str] = None
 

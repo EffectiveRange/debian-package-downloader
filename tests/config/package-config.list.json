@@ -20,8 +20,7 @@
       "owner": "owner3",
       "repo": "repo3",
       "tag": "v3.0.0",
-      "token": "$TEST_TOKEN",
-      "matcher": "*.deb"
+      "token": "$TEST_TOKEN"
     }
   },
   {
@@ -30,7 +29,7 @@
     "release": {
       "owner": "owner4",
       "repo": "repo4",
-      "matcher": "*.deb"
+      "matcher": "*amd64.deb"
     }
   }
 ]

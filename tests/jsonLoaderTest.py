@@ -39,7 +39,7 @@ class JsonLoaderTest(TestCase):
         self.assertEqual(config_1.release.tag, 'v1.0.0')
         self.assertEqual(config_1.release.token, 'token1')
         self.assertEqual(config_1.release.raw_token, 'token1')
-        self.assertEqual(config_1.release.matcher, '*')
+        self.assertEqual(config_1.release.matcher, '*.deb')
         config_2 = config_list[1]
         self.assertEqual(config_2.package, 'package2')
         self.assertEqual(config_2.version, '2.0.0')
@@ -66,7 +66,7 @@ class JsonLoaderTest(TestCase):
         self.assertIsNone(config_4.release.tag)
         self.assertIsNone(config_4.release.token)
         self.assertIsNone(config_4.release.raw_token)
-        self.assertEqual(config_4.release.matcher, '*.deb')
+        self.assertEqual(config_4.release.matcher, '*amd64.deb')
 
     def test_returns_object_when_json_file_is_schema_valid(self):
         # Given
