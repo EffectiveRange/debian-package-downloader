@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='debian-package-downloader',
-    version='1.0.3',
+    version='1.0.4',
     description='Debian package downloader that supports downloading packages from .deb file URL'
                 'and .deb GitHub release asset',
     author='Ferenc Nandor Janky & Attila Gombos',
