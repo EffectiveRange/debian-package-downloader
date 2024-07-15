@@ -23,7 +23,7 @@ class ReleaseConfig(BaseModel):
     @property
     def raw_token(self) -> Optional[str]:
         if self.token and self.token.startswith('$'):
-            return os.getenv(self.token[1:], None)
+            return os.getenv(self.token[1:])
         return self.token
 
     @property

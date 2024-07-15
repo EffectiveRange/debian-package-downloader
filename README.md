@@ -43,7 +43,7 @@ pip install .
 
 2. Install from distribution file
     ```bash
-    pip install dist/debian_package_downloader-1.0.0.tar.gz
+    pip install dist/debian-package-downloader-1.0.0.tar.gz
     ```
 
 3. Install from GitHub repository
