@@ -22,7 +22,7 @@ class AssetDownloaderTest(TestCase):
         # Given
         file_downloader, release = create_components(['/opt/debs/package1.deb', '/opt/debs/package2.deb'])
         asset_downloader = AssetDownloader(file_downloader)
-        config = ReleaseConfig(owner='owner1', repo='repo1', tag='v1.0.0', matcher='*.deb', token='token1')
+        config = ReleaseConfig(owner='owner1', repo='repo1', tag='v1.0.0', token='token1')
 
         # When
         result = asset_downloader.download(config, release, skip_if_exists=False)
@@ -40,7 +40,7 @@ class AssetDownloaderTest(TestCase):
         # Given
         file_downloader, release = create_components(['/opt/debs/package1.deb', '/opt/debs/package2.deb'])
         asset_downloader = AssetDownloader(file_downloader)
-        config = ReleaseConfig(owner='owner1', repo='repo1', tag='v1.0.0', matcher='*.deb')
+        config = ReleaseConfig(owner='owner1', repo='repo1', tag='v1.0.0')
 
         # When
         result = asset_downloader.download(config, release)
@@ -54,12 +54,12 @@ class AssetDownloaderTest(TestCase):
             mock.call('url3', 'package2.deb', {'Accept': 'application/octet-stream'})
         ])
 
-    def test_downloads_all_files_when_no_matcher_is_specified(self):
+    def test_downloads_all_files_when_star_matcher_is_specified(self):
         # Given
         file_downloader, release = create_components(
             ['/opt/debs/package1.whl', '/opt/debs/package1.deb', '/opt/debs/package2.deb'])
         asset_downloader = AssetDownloader(file_downloader)
-        config = ReleaseConfig(owner='owner1', repo='repo1', tag='v1.0.0', token='token1')
+        config = ReleaseConfig(owner='owner1', repo='repo1', tag='v1.0.0', token='token1', matcher='*')
 
         # When
         result = asset_downloader.download(config, release, skip_if_exists=False)
@@ -79,7 +79,7 @@ class AssetDownloaderTest(TestCase):
         # Given
         file_downloader, release = create_components(['/opt/debs/package1.deb'])
         asset_downloader = AssetDownloader(file_downloader)
-        config = ReleaseConfig(owner='owner1', repo='repo1', tag='v1.0.0', matcher='*.deb', token='token1')
+        config = ReleaseConfig(owner='owner1', repo='repo1', tag='v1.0.0', token='token1')
 
         # When
         result = asset_downloader.download(config, release, first_match_only=True, skip_if_exists=False)
