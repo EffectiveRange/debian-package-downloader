@@ -1,3 +1,7 @@
+
+[![Test and Release](https://github.com/EffectiveRange/debian-package-downloader/actions/workflows/test_and_release.yml/badge.svg)](https://github.com/EffectiveRange/debian-package-downloader/actions/workflows/test_and_release.yml)
+[![Coverage badge](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/EffectiveRange/debian-package-downloader/python-coverage-comment-action-data/endpoint.json)](https://htmlpreview.github.io/?https://github.com/EffectiveRange/debian-package-downloader/blob/python-coverage-comment-action-data/htmlcov/index.html)
+
 # debian-package-downloader
 
 Debian package downloader that supports downloading packages from  .deb file URL and .deb GitHub release asset
@@ -23,7 +27,6 @@ Debian package downloader that supports downloading packages from  .deb file URL
 
 - [Python3](https://www.python.org/downloads/)
 - [PyGithub](https://pygithub.readthedocs.io/en/latest/index.html)
-- [requests](https://requests.readthedocs.io/en/latest/)
 - [pydantic](https://docs.pydantic.dev/latest/#pydantic-examples)
 
 ## Installation
@@ -55,7 +58,7 @@ pip install .
 
 ### Command line reference
 
-```commandline
+```bash
 $ bin/debian-package-downloader.py --help
 usage: debian-package-downloader.py [-h] [-f LOG_FILE] [-l LOG_LEVEL] [-d DOWNLOAD] package_config
 
@@ -74,7 +77,7 @@ options:
 
 ### Example
 
-```commandline
+```bash
 $ bin/debian-package-downloader.py ~/config/package-config.json
 ```
 
@@ -107,7 +110,7 @@ Example configuration (example `package-config.json` config file content):
 
 Output:
 
-```commandline
+```bash
 2024-07-04T07:06:18.199391Z [info     ] Starting package downloader    [PackageDownloaderApp] app_version=1.0.0 application=debian-package-downloader arguments={'log_file': None, 'log_level': 'info', 'download': '/tmp/packages', 'package_config': 'build/package-config.json'} hostname=Legion7iPro
 2024-07-04T07:06:18.199758Z [info     ] Local file path provided, skipping download [FileDownloader] app_version=1.0.0 application=debian-package-downloader file=/home/attilagombos/EffectiveRange/debian-package-downloader/build/package-config.json hostname=Legion7iPro
 2024-07-04T07:06:18.200043Z [info     ] Downloading packages           [PackageDownloader] app_version=1.0.0 application=debian-package-downloader hostname=Legion7iPro packages=['wifi-manager', 'pic18-q20-programmer', 'filebeat']
