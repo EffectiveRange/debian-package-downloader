@@ -7,10 +7,10 @@
 import os
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter, Namespace
 
+from common_utility import JsonLoader, SessionProvider, FileDownloader
 from context_logger import get_logger, setup_logging
 
-from package_downloader import FileDownloader, DebDownloader, RepositoryProvider, \
-    SessionProvider, AssetDownloader, PackageDownloader, JsonLoader
+from package_downloader import DebDownloader, RepositoryProvider, AssetDownloader, PackageDownloader
 
 log = get_logger('PackageDownloaderApp')
 

@@ -5,19 +5,21 @@
 import fnmatch
 from typing import Optional
 
+from common_utility import IFileDownloader
 from context_logger import get_logger
 from github.GitRelease import GitRelease
 from github.GitReleaseAsset import GitReleaseAsset
 
-from package_downloader import ReleaseConfig, IFileDownloader
+from package_downloader import ReleaseConfig
 
 log = get_logger('AssetDownloader')
 
 
 class IAssetDownloader(object):
 
-    def download(self, config: ReleaseConfig, release: GitRelease,
-                 first_match_only: bool = False, skip_if_exists: bool = True) -> list[str]:
+    def download(
+        self, config: ReleaseConfig, release: GitRelease, first_match_only: bool = False, skip_if_exists: bool = True
+    ) -> list[str]:
         raise NotImplementedError()
 
 
@@ -26,8 +28,9 @@ class AssetDownloader(IAssetDownloader):
     def __init__(self, file_downloader: IFileDownloader) -> None:
         self._file_downloader = file_downloader
 
-    def download(self, config: ReleaseConfig, release: GitRelease,
-                 first_match_only: bool = False, skip_if_exists: bool = True) -> list[str]:
+    def download(
+        self, config: ReleaseConfig, release: GitRelease, first_match_only: bool = False, skip_if_exists: bool = True
+    ) -> list[str]:
         assets = release.get_assets()
 
         log.debug('Retrieved asset list', release=config, assets=[asset.name for asset in assets])

@@ -3,12 +3,12 @@ from typing import Optional
 from unittest import TestCase
 from unittest.mock import MagicMock
 
+from common_utility import IFileDownloader
 from context_logger import setup_logging
 from github.GitRelease import GitRelease
 from github.Repository import Repository
 
-from package_downloader import IFileDownloader, IAssetDownloader, DebDownloader, PackageConfig, ReleaseConfig, \
-    IRepositoryProvider
+from package_downloader import IAssetDownloader, DebDownloader, PackageConfig, ReleaseConfig, IRepositoryProvider
 
 
 class DebDownloaderTest(TestCase):

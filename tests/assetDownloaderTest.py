@@ -2,11 +2,12 @@ import unittest
 from unittest import TestCase, mock
 from unittest.mock import MagicMock
 
+from common_utility import IFileDownloader
 from context_logger import setup_logging
 from github.GitRelease import GitRelease
 from github.GitReleaseAsset import GitReleaseAsset
 
-from package_downloader import IFileDownloader, AssetDownloader, ReleaseConfig
+from package_downloader import AssetDownloader, ReleaseConfig
 
 
 class AssetDownloaderTest(TestCase):
@@ -31,10 +32,16 @@ class AssetDownloaderTest(TestCase):
         self.assertEqual(2, len(result))
         self.assertEqual('/opt/debs/package1.deb', result[0])
         self.assertEqual('/opt/debs/package2.deb', result[1])
-        file_downloader.download.assert_has_calls([
-            mock.call('url2', 'package1.deb', {'Accept': 'application/octet-stream', 'Authorization': 'token token1'}),
-            mock.call('url3', 'package2.deb', {'Accept': 'application/octet-stream', 'Authorization': 'token token1'})
-        ])
+        file_downloader.download.assert_has_calls(
+            [
+                mock.call(
+                    'url2', 'package1.deb', {'Accept': 'application/octet-stream', 'Authorization': 'token token1'}
+                ),
+                mock.call(
+                    'url3', 'package2.deb', {'Accept': 'application/octet-stream', 'Authorization': 'token token1'}
+                ),
+            ]
+        )
 
     def test_returns_downloaded_file_path_when_assets_founds_and_no_token_specified(self):
         # Given
@@ -49,15 +56,18 @@ class AssetDownloaderTest(TestCase):
         self.assertEqual(2, len(result))
         self.assertEqual('/opt/debs/package1.deb', result[0])
         self.assertEqual('/opt/debs/package2.deb', result[1])
-        file_downloader.download.assert_has_calls([
-            mock.call('url2', 'package1.deb', {'Accept': 'application/octet-stream'}),
-            mock.call('url3', 'package2.deb', {'Accept': 'application/octet-stream'})
-        ])
+        file_downloader.download.assert_has_calls(
+            [
+                mock.call('url2', 'package1.deb', {'Accept': 'application/octet-stream'}),
+                mock.call('url3', 'package2.deb', {'Accept': 'application/octet-stream'}),
+            ]
+        )
 
     def test_downloads_all_files_when_star_matcher_is_specified(self):
         # Given
         file_downloader, release = create_components(
-            ['/opt/debs/package1.whl', '/opt/debs/package1.deb', '/opt/debs/package2.deb'])
+            ['/opt/debs/package1.whl', '/opt/debs/package1.deb', '/opt/debs/package2.deb']
+        )
         asset_downloader = AssetDownloader(file_downloader)
         config = ReleaseConfig(owner='owner1', repo='repo1', tag='v1.0.0', token='token1', matcher='*')
 
@@ -69,11 +79,19 @@ class AssetDownloaderTest(TestCase):
         self.assertEqual('/opt/debs/package1.whl', result[0])
         self.assertEqual('/opt/debs/package1.deb', result[1])
         self.assertEqual('/opt/debs/package2.deb', result[2])
-        file_downloader.download.assert_has_calls([
-            mock.call('url1', 'package1.whl', {'Accept': 'application/octet-stream', 'Authorization': 'token token1'}),
-            mock.call('url2', 'package1.deb', {'Accept': 'application/octet-stream', 'Authorization': 'token token1'}),
-            mock.call('url3', 'package2.deb', {'Accept': 'application/octet-stream', 'Authorization': 'token token1'})
-        ])
+        file_downloader.download.assert_has_calls(
+            [
+                mock.call(
+                    'url1', 'package1.whl', {'Accept': 'application/octet-stream', 'Authorization': 'token token1'}
+                ),
+                mock.call(
+                    'url2', 'package1.deb', {'Accept': 'application/octet-stream', 'Authorization': 'token token1'}
+                ),
+                mock.call(
+                    'url3', 'package2.deb', {'Accept': 'application/octet-stream', 'Authorization': 'token token1'}
+                ),
+            ]
+        )
 
     def test_returns_downloaded_file_path_when_asset_found_and_first_match_only(self):
         # Given
@@ -87,7 +105,8 @@ class AssetDownloaderTest(TestCase):
         # Then
         self.assertEqual('/opt/debs/package1.deb', result[0])
         file_downloader.download.assert_called_once_with(
-            'url2', 'package1.deb', {'Accept': 'application/octet-stream', 'Authorization': 'token token1'})
+            'url2', 'package1.deb', {'Accept': 'application/octet-stream', 'Authorization': 'token token1'}
+        )
 
     def test_raises_error_when_asset_not_found(self):
         # Given
