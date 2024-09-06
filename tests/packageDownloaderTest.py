@@ -2,9 +2,10 @@ import unittest
 from unittest import TestCase, mock
 from unittest.mock import MagicMock
 
+from common_utility import IJsonLoader
 from context_logger import setup_logging
 
-from package_downloader import PackageDownloader, IJsonLoader, IDebDownloader, PackageConfig
+from package_downloader import PackageDownloader, IDebDownloader, PackageConfig
 
 
 class PackageDownloaderTest(TestCase):
@@ -27,10 +28,7 @@ class PackageDownloaderTest(TestCase):
         package_downloader.download_packages()
 
         # Then
-        deb_downloader.download.assert_has_calls([
-            mock.call(config1),
-            mock.call(config2)
-        ])
+        deb_downloader.download.assert_has_calls([mock.call(config1), mock.call(config2)])
 
     def test_downloads_only_one_package(self):
         # Given
@@ -44,10 +42,7 @@ class PackageDownloaderTest(TestCase):
         package_downloader.download_packages()
 
         # Then
-        deb_downloader.download.assert_has_calls([
-            mock.call(config1),
-            mock.call(config2)
-        ])
+        deb_downloader.download.assert_has_calls([mock.call(config1), mock.call(config2)])
 
 
 def create_components(packages):

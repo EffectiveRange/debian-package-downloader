@@ -4,10 +4,11 @@
 
 from typing import Optional
 
+from common_utility import IFileDownloader
 from context_logger import get_logger
 from github.GitRelease import GitRelease
 
-from package_downloader import PackageConfig, IFileDownloader, IAssetDownloader, ReleaseConfig, IRepositoryProvider
+from package_downloader import PackageConfig, IAssetDownloader, ReleaseConfig, IRepositoryProvider
 
 log = get_logger('DebDownloader')
 
@@ -20,8 +21,12 @@ class IDebDownloader(object):
 
 class DebDownloader(IDebDownloader):
 
-    def __init__(self, repository_provider: IRepositoryProvider, asset_downloader: IAssetDownloader,
-                 file_downloader: IFileDownloader):
+    def __init__(
+        self,
+        repository_provider: IRepositoryProvider,
+        asset_downloader: IAssetDownloader,
+        file_downloader: IFileDownloader,
+    ):
         self._repository_provider = repository_provider
         self._asset_downloader = asset_downloader
         self._file_downloader = file_downloader
