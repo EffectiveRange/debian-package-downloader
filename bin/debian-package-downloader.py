@@ -7,7 +7,8 @@
 import os
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter, Namespace
 
-from common_utility import JsonLoader, SessionProvider, FileDownloader
+from common_utility import SessionProvider, FileDownloader
+from common_utility.jsonLoader import JsonLoader
 from context_logger import get_logger, setup_logging
 
 from package_downloader import DebDownloader, RepositoryProvider, AssetDownloader, PackageDownloader
