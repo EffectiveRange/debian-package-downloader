@@ -2,7 +2,7 @@ import unittest
 from unittest import TestCase, mock
 from unittest.mock import MagicMock
 
-from common_utility import IJsonLoader
+from common_utility.jsonLoader import IJsonLoader
 from context_logger import setup_logging
 
 from package_downloader import PackageDownloader, IDebDownloader, PackageConfig
