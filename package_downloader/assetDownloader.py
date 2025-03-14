@@ -3,6 +3,7 @@
 # SPDX-License-Identifier: MIT
 
 import fnmatch
+from collections import OrderedDict
 from typing import Optional
 
 from common_utility import IFileDownloader
@@ -25,8 +26,9 @@ class IAssetDownloader(object):
 
 class AssetDownloader(IAssetDownloader):
 
-    def __init__(self, file_downloader: IFileDownloader) -> None:
+    def __init__(self, file_downloader: IFileDownloader, distro_map: Optional[OrderedDict[str, str]] = None) -> None:
         self._file_downloader = file_downloader
+        self._distro_map = distro_map
 
     def download(
         self, config: ReleaseConfig, release: GitRelease, first_match_only: bool = False, skip_if_exists: bool = True
@@ -60,4 +62,15 @@ class AssetDownloader(IAssetDownloader):
         if token:
             headers['Authorization'] = f'token {token}'
 
-        return self._file_downloader.download(asset.url, asset.name, headers)
+        sub_dir = None
+
+        if self._distro_map:
+            for distro_matcher, distro_dir in self._distro_map.items():
+                if distro_matcher in asset.name:
+                    sub_dir = distro_dir
+                    break
+            if not sub_dir:
+                sub_dir = list(self._distro_map.values())[0]
+                log.warning('No matching distro found in file name, using default', asset=asset.name, distro=sub_dir)
+
+        return self._file_downloader.download(asset.url, asset.name, sub_dir, headers)
