@@ -2,15 +2,15 @@
 
 [Full report](https://htmlpreview.github.io/?https://github.com/EffectiveRange/debian-package-downloader/blob/python-coverage-comment-action-data/htmlcov/index.html)
 
-| Name                                     |    Stmts |     Miss |   Branch |   BrPart |   Cover |   Missing |
-|----------------------------------------- | -------: | -------: | -------: | -------: | ------: | --------: |
-| package\_downloader/\_\_init\_\_.py      |        6 |        0 |        0 |        0 |    100% |           |
-| package\_downloader/assetDownloader.py   |       33 |        0 |       10 |        0 |    100% |           |
-| package\_downloader/debDownloader.py     |       37 |        0 |       10 |        0 |    100% |           |
-| package\_downloader/packageConfig.py     |        8 |        0 |        0 |        0 |    100% |           |
-| package\_downloader/packageDownloader.py |       21 |        0 |        2 |        0 |    100% |           |
-| package\_downloader/releaseConfig.py     |       17 |        0 |        6 |        2 |     91% |24->23, 30->29 |
-|                                **TOTAL** |  **122** |    **0** |   **28** |    **2** | **99%** |           |
+| Name                                     |    Stmts |     Miss |   Branch |   BrPart |    Cover |   Missing |
+|----------------------------------------- | -------: | -------: | -------: | -------: | -------: | --------: |
+| package\_downloader/\_\_init\_\_.py      |        6 |        0 |        0 |        0 |     100% |           |
+| package\_downloader/assetDownloader.py   |       44 |        0 |       18 |        0 |     100% |           |
+| package\_downloader/debDownloader.py     |       37 |        0 |       10 |        0 |     100% |           |
+| package\_downloader/packageConfig.py     |        8 |        0 |        0 |        0 |     100% |           |
+| package\_downloader/packageDownloader.py |       21 |        0 |        2 |        0 |     100% |           |
+| package\_downloader/releaseConfig.py     |       17 |        0 |        2 |        0 |     100% |           |
+|                                **TOTAL** |  **133** |    **0** |   **32** |    **0** | **100%** |           |
 
 
 ## Setup coverage badge
