@@ -12,6 +12,7 @@ class ReleaseConfig(BaseModel):
     owner: str
     repo: str
     matcher: str = '*.deb'
+    private: bool = False
     tag: Optional[str] = None
     token: Optional[str] = None
 

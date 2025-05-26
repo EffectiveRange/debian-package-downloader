@@ -25,9 +25,11 @@ class IAssetDownloader(object):
 
 class AssetDownloader(IAssetDownloader):
 
-    def __init__(self, file_downloader: IFileDownloader, distro_map: Optional[OrderedDict[str, str]] = None) -> None:
+    def __init__(self, file_downloader: IFileDownloader, distro_map: Optional[OrderedDict[str, str]] = None,
+                 private_dir: str = 'private') -> None:
         self._file_downloader = file_downloader
         self._distro_map = distro_map if distro_map else {}
+        self._private_dir = private_dir
 
     def download(self, config: ReleaseConfig, release: GitRelease, first_match_only: bool = False,
                  skip_if_exists: bool = True) -> list[str]:
@@ -47,9 +49,10 @@ class AssetDownloader(IAssetDownloader):
                     headers['Authorization'] = f'token {config.raw_token}'
 
                 if self._distro_map:
-                    downloaded_files.extend(self._download_for_distro(asset, headers))
+                    downloaded_files.extend(self._download_for_distro(asset, headers, config.private))
                 else:
-                    downloaded_files.append(self._file_downloader.download(asset.url, asset.name, None, headers))
+                    sub_dir = self._private_dir if config.private else None
+                    downloaded_files.append(self._file_downloader.download(asset.url, asset.name, sub_dir, headers))
 
                 if first_match_only:
                     break
@@ -60,9 +63,14 @@ class AssetDownloader(IAssetDownloader):
 
         return downloaded_files
 
-    def _download_for_distro(self, asset: GitReleaseAsset, headers: dict[str, str]) -> list[str]:
+    def _download_for_distro(self, asset: GitReleaseAsset, headers: dict[str, str], private: bool) -> list[str]:
         for distro_matcher, distro_dir in self._distro_map.items():
             if distro_matcher in asset.name:
-                return [self._file_downloader.download(asset.url, asset.name, distro_dir, headers)]
+                sub_dir = self._get_sub_dir(distro_dir, private)
+                return [self._file_downloader.download(asset.url, asset.name, sub_dir, headers)]
 
-        return self._file_downloader.download_and_copy(asset.url, list(self._distro_map.values()), asset.name, headers)
+        sub_dirs = [self._get_sub_dir(distro_dir, private) for distro_dir in self._distro_map.values()]
+        return self._file_downloader.download_and_copy(asset.url, sub_dirs, asset.name, headers)
+
+    def _get_sub_dir(self, sub_dir: str, private: bool) -> str:
+        return f'{sub_dir}/{self._private_dir}' if private else sub_dir
