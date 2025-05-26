@@ -105,12 +105,12 @@ class DebDownloaderTest(TestCase):
 
 def create_components(repository: Optional[Repository] = None, release: Optional[GitRelease] = None):
     if repository:
-        repository.full_name = 'owner1/repo1'
+        repository._full_name = 'owner1/repo1'
         repository.get_release.return_value = release
         repository.get_latest_release.return_value = release
 
     if release:
-        release.tag_name = 'v1.0.0'
+        release._tag_name = 'v1.0.0'
 
     repository_provider = MagicMock(spec=IRepositoryProvider)
     repository_provider.get_repository.return_value = repository

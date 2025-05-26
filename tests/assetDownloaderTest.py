@@ -1,5 +1,6 @@
 import unittest
 from collections import OrderedDict
+from pathlib import Path
 from unittest import TestCase, mock
 from unittest.mock import MagicMock
 
@@ -69,13 +70,13 @@ class AssetDownloaderTest(TestCase):
                 mock.call(
                     'url2',
                     'package1.deb',
-                    'private',
+                    Path('private'),
                     {'Accept': 'application/octet-stream', 'Authorization': 'token token1'},
                 ),
                 mock.call(
                     'url3',
                     'package2.deb',
-                    'private',
+                    Path('private'),
                     {'Accept': 'application/octet-stream', 'Authorization': 'token token1'},
                 ),
             ]
@@ -120,20 +121,20 @@ class AssetDownloaderTest(TestCase):
                 mock.call(
                     'url1',
                     'distro1_package1.deb',
-                    'distro1',
+                    Path('distro1'),
                     {'Accept': 'application/octet-stream', 'Authorization': 'token token1'},
                 ),
                 mock.call(
                     'url2',
                     'distro2_package2.deb',
-                    'distro2',
+                    Path('distro2'),
                     {'Accept': 'application/octet-stream', 'Authorization': 'token token1'},
                 )
             ]
         )
         file_downloader.download_and_copy.assert_called_once_with(
             'url3',
-            ['distro1', 'distro2'],
+            [Path('distro1'), Path('distro2')],
             'package3.deb',
             {'Accept': 'application/octet-stream', 'Authorization': 'token token1'},
         )
@@ -177,20 +178,20 @@ class AssetDownloaderTest(TestCase):
                 mock.call(
                     'url1',
                     'distro1_package1.deb',
-                    'distro1/private',
+                    Path('distro1/private'),
                     {'Accept': 'application/octet-stream', 'Authorization': 'token token1'},
                 ),
                 mock.call(
                     'url2',
                     'distro2_package2.deb',
-                    'distro2/private',
+                    Path('distro2/private'),
                     {'Accept': 'application/octet-stream', 'Authorization': 'token token1'},
                 )
             ]
         )
         file_downloader.download_and_copy.assert_called_once_with(
             'url3',
-            ['distro1/private', 'distro2/private'],
+            [Path('distro1/private'), Path('distro2/private')],
             'package3.deb',
             {'Accept': 'application/octet-stream', 'Authorization': 'token token1'},
         )

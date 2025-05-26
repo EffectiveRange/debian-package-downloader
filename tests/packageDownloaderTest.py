@@ -1,4 +1,5 @@
 import unittest
+from pathlib import Path
 from unittest import TestCase, mock
 from unittest.mock import MagicMock
 
@@ -22,7 +23,7 @@ class PackageDownloaderTest(TestCase):
         config1 = PackageConfig(package='package1', version='1.0.0')
         config2 = PackageConfig(package='package2', version='2.0.0')
         json_loader, deb_downloader = create_components([config1, config2])
-        package_downloader = PackageDownloader('path/to/config', json_loader, deb_downloader)
+        package_downloader = PackageDownloader(Path('path/to/config'), json_loader, deb_downloader)
 
         # When
         package_downloader.download_packages()
@@ -36,7 +37,7 @@ class PackageDownloaderTest(TestCase):
         config2 = PackageConfig(package='package2', version='2.0.0')
         json_loader, deb_downloader = create_components([config1, config2])
         deb_downloader.download.side_effect = ['/opt/debs/package1', Exception('Failed to download package')]
-        package_downloader = PackageDownloader('path/to/config', json_loader, deb_downloader)
+        package_downloader = PackageDownloader(Path('path/to/config'), json_loader, deb_downloader)
 
         # When
         package_downloader.download_packages()
