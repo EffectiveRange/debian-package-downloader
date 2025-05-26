@@ -2,11 +2,13 @@
 # SPDX-FileCopyrightText: 2024 Attila Gombos <attila.gombos@effective-range.com>
 # SPDX-License-Identifier: MIT
 
+from pathlib import Path
 from typing import Optional
 
 from common_utility import IFileDownloader
 from context_logger import get_logger
 from github.GitRelease import GitRelease
+from tenacity import retry, wait_fixed, stop_after_attempt
 
 from package_downloader import PackageConfig, IAssetDownloader, ReleaseConfig, IRepositoryProvider
 
@@ -15,28 +17,28 @@ log = get_logger('DebDownloader')
 
 class IDebDownloader(object):
 
-    def download(self, package: PackageConfig) -> Optional[str]:
+    def download(self, package: PackageConfig) -> Optional[Path]:
         raise NotImplementedError()
 
 
 class DebDownloader(IDebDownloader):
 
     def __init__(
-        self,
-        repository_provider: IRepositoryProvider,
-        asset_downloader: IAssetDownloader,
-        file_downloader: IFileDownloader,
+            self,
+            repository_provider: IRepositoryProvider,
+            asset_downloader: IAssetDownloader,
+            file_downloader: IFileDownloader,
     ):
         self._repository_provider = repository_provider
         self._asset_downloader = asset_downloader
         self._file_downloader = file_downloader
 
-    def download(self, config: PackageConfig) -> Optional[str]:
+    def download(self, config: PackageConfig) -> Optional[Path]:
         package_file = None
 
         if config.file_url:
             log.info('Downloading package file from file URL', package=config.package, url=config.file_url)
-            package_file = self._file_downloader.download(config.file_url)
+            package_file = self._download(config.file_url)
 
         if not package_file and (release_config := config.release):
             log.info('Downloading package file from release', package=config.package, release=release_config)
@@ -48,6 +50,10 @@ class DebDownloader(IDebDownloader):
             raise ValueError('No download source configured')
 
         return package_file
+
+    @retry(wait=wait_fixed(1), stop=stop_after_attempt(3), reraise=True)
+    def _download(self, file_url: str) -> Path:
+        return self._file_downloader.download(file_url)
 
     def _get_release(self, config: ReleaseConfig) -> GitRelease:
         repository = self._repository_provider.get_repository(config)

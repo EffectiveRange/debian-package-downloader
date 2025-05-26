@@ -15,6 +15,7 @@ setup(
         'PyGithub',
         'requests',
         'pydantic',
+        'tenacity',
         'python-context-logger@git+https://github.com/EffectiveRange/python-context-logger.git@latest',
         'python-common-utility@git+https://github.com/EffectiveRange/python-common-utility.git@latest',
     ],

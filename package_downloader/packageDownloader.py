@@ -2,6 +2,8 @@
 # SPDX-FileCopyrightText: 2024 Attila Gombos <attila.gombos@effective-range.com>
 # SPDX-License-Identifier: MIT
 
+from pathlib import Path
+
 from common_utility.jsonLoader import IJsonLoader
 from context_logger import get_logger
 
@@ -12,7 +14,7 @@ log = get_logger('PackageDownloader')
 
 class PackageDownloader(object):
 
-    def __init__(self, config_path: str, json_loader: IJsonLoader, deb_downloader: IDebDownloader) -> None:
+    def __init__(self, config_path: Path, json_loader: IJsonLoader, deb_downloader: IDebDownloader) -> None:
         self._config_path = config_path
         self._json_loader = json_loader
         self._deb_downloader = deb_downloader
