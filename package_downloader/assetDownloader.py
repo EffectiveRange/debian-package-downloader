@@ -51,9 +51,9 @@ class AssetDownloader(IAssetDownloader):
                     headers['Authorization'] = f'token {config.raw_token}'
 
                 if self._distro_map:
-                    downloaded_files.extend(self._download_for_distro(asset, headers, config.private))
+                    downloaded_files.extend(self._download_for_distro(asset, headers, config.is_private))
                 else:
-                    downloaded_files.append(self._download(asset.url, asset.name, None, headers, config.private))
+                    downloaded_files.append(self._download(asset.url, asset.name, None, headers, config.is_private))
 
                 if first_match_only:
                     break
