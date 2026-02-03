@@ -12,7 +12,7 @@ Debian package downloader that supports downloading packages from  .deb file URL
 - [Requirements](#requirements)
 - [Installation](#installation)
   - [Install from source root directory](#install-from-source-root-directory)
-  - [Install from source distribution](#install-from-source-distribution)
+  - [Install from GitHub repository](#install-from-github-repository)
 - [Usage](#usage)
   - [Command line reference:](#command-line-reference)
   - [Example:](#example)
@@ -34,25 +34,16 @@ Debian package downloader that supports downloading packages from  .deb file URL
 ### Install from source root directory
 
 ```bash
+git clone https://github.com/EffectiveRange/debian-package-downloader.git@latest
+cd debian-package-downloader
 pip install .
 ```
 
-### Install from source distribution
+### Install from GitHub repository
 
-1. Create source distribution
-    ```bash
-    python setup.py sdist
-    ```
-
-2. Install from distribution file
-    ```bash
-    pip install dist/debian-package-downloader-1.0.0.tar.gz
-    ```
-
-3. Install from GitHub repository
-    ```bash
-    pip install git+https://github.com/EffectiveRange/debian-package-downloader.git@latest
-    ```
+```bash
+pip install git+https://github.com/EffectiveRange/debian-package-downloader.git@latest
+```
 
 ## Usage
 
