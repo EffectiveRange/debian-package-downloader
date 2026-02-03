@@ -86,12 +86,12 @@ class AssetDownloaderTest(TestCase):
         # Given
         file_downloader = MagicMock(spec=IFileDownloader)
         file_downloader.download.side_effect = [
-            '/opt/debs/distro1/distro1_package1.deb',
-            '/opt/debs/distro2/distro2_package2.deb',
+            '/opt/debs/distro1/main/distro1_package1.deb',
+            '/opt/debs/distro2/main/distro2_package2.deb',
         ]
         file_downloader.download_and_copy.return_value = [
-            '/opt/debs/distro1/package3.deb',
-            '/opt/debs/distro1/package3.deb',
+            '/opt/debs/distro1/main/package3.deb',
+            '/opt/debs/distro2/main/package3.deb',
         ]
         release = MagicMock(spec=GitRelease)
         asset1 = MagicMock(spec=GitReleaseAsset)
@@ -106,35 +106,36 @@ class AssetDownloaderTest(TestCase):
         release.get_assets.return_value = [asset1, asset2, asset3]
         distro_map = OrderedDict({'distro1_': 'distro1', 'distro2_': 'distro2'})
         asset_downloader = AssetDownloader(file_downloader, distro_map)
-        config = ReleaseConfig(owner='owner1', repo='repo1', tag='v1.0.0', token='token1')
+        config = ReleaseConfig(owner='owner1', repo='repo1', tag='v1.0.0', component='main', token='token1')
 
         # When
         result = asset_downloader.download(config, release, skip_if_exists=False)
 
         # Then
         self.assertEqual(4, len(result))
-        self.assertEqual('/opt/debs/distro1/distro1_package1.deb', result[0])
-        self.assertEqual('/opt/debs/distro2/distro2_package2.deb', result[1])
-        self.assertEqual('/opt/debs/distro1/package3.deb', result[2])
+        self.assertEqual('/opt/debs/distro1/main/distro1_package1.deb', result[0])
+        self.assertEqual('/opt/debs/distro2/main/distro2_package2.deb', result[1])
+        self.assertEqual('/opt/debs/distro1/main/package3.deb', result[2])
+        self.assertEqual('/opt/debs/distro2/main/package3.deb', result[3])
         file_downloader.download.assert_has_calls(
             [
                 mock.call(
                     'url1',
                     'distro1_package1.deb',
-                    Path('distro1'),
+                    Path('distro1/main'),
                     {'Accept': 'application/octet-stream', 'Authorization': 'token token1'},
                 ),
                 mock.call(
                     'url2',
                     'distro2_package2.deb',
-                    Path('distro2'),
+                    Path('distro2/main'),
                     {'Accept': 'application/octet-stream', 'Authorization': 'token token1'},
                 )
             ]
         )
         file_downloader.download_and_copy.assert_called_once_with(
             'url3',
-            [Path('distro1'), Path('distro2')],
+            [Path('distro1/main'), Path('distro2/main')],
             'package3.deb',
             {'Accept': 'application/octet-stream', 'Authorization': 'token token1'},
         )
@@ -143,12 +144,12 @@ class AssetDownloaderTest(TestCase):
         # Given
         file_downloader = MagicMock(spec=IFileDownloader)
         file_downloader.download.side_effect = [
-            '/opt/debs/distro1/private/distro1_package1.deb',
-            '/opt/debs/distro2/private/distro2_package2.deb',
+            '/opt/debs/distro1/main/private/distro1_package1.deb',
+            '/opt/debs/distro2/main/private/distro2_package2.deb',
         ]
         file_downloader.download_and_copy.return_value = [
-            '/opt/debs/distro1/private/package3.deb',
-            '/opt/debs/distro1/private/package3.deb',
+            '/opt/debs/distro1/main/private/package3.deb',
+            '/opt/debs/distro2/main/private/package3.deb',
         ]
         release = MagicMock(spec=GitRelease)
         asset1 = MagicMock(spec=GitReleaseAsset)
@@ -170,28 +171,29 @@ class AssetDownloaderTest(TestCase):
 
         # Then
         self.assertEqual(4, len(result))
-        self.assertEqual('/opt/debs/distro1/private/distro1_package1.deb', result[0])
-        self.assertEqual('/opt/debs/distro2/private/distro2_package2.deb', result[1])
-        self.assertEqual('/opt/debs/distro1/private/package3.deb', result[2])
+        self.assertEqual('/opt/debs/distro1/main/private/distro1_package1.deb', result[0])
+        self.assertEqual('/opt/debs/distro2/main/private/distro2_package2.deb', result[1])
+        self.assertEqual('/opt/debs/distro1/main/private/package3.deb', result[2])
+        self.assertEqual('/opt/debs/distro2/main/private/package3.deb', result[3])
         file_downloader.download.assert_has_calls(
             [
                 mock.call(
                     'url1',
                     'distro1_package1.deb',
-                    Path('distro1/private'),
+                    Path('distro1/main/private'),
                     {'Accept': 'application/octet-stream', 'Authorization': 'token token1'},
                 ),
                 mock.call(
                     'url2',
                     'distro2_package2.deb',
-                    Path('distro2/private'),
+                    Path('distro2/main/private'),
                     {'Accept': 'application/octet-stream', 'Authorization': 'token token1'},
                 )
             ]
         )
         file_downloader.download_and_copy.assert_called_once_with(
             'url3',
-            [Path('distro1/private'), Path('distro2/private')],
+            [Path('distro1/main/private'), Path('distro2/main/private')],
             'package3.deb',
             {'Accept': 'application/octet-stream', 'Authorization': 'token token1'},
         )

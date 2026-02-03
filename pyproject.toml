@@ -1,0 +1,36 @@
+[project]
+name = "debian-package-downloader"
+description = "Debian package downloader, supports downloading .deb packages from file URL and GitHub release asset"
+authors = [
+    { name = "Ferenc Nandor Janky & Attila Gombos", email = "info@effective-range.com" }
+]
+maintainers = [
+    { name = "Ferenc Nandor Janky & Attila Gombos", email = "info@effective-range.com" }
+]
+dependencies = [
+    "PyGithub",
+    "requests",
+    "pydantic",
+    "tenacity",
+    "python-context-logger @ git+https://github.com/EffectiveRange/python-context-logger.git@latest",
+    "python-common-utility @ git+https://github.com/EffectiveRange/python-common-utility.git@latest"
+]
+dynamic = ["version"]
+
+[tool.setuptools]
+package-dir = { "" = "." }
+packages = ["package_downloader"]
+
+[tool.setuptools.data-files]
+"bin" = ["bin/debian-package-downloader.py"]
+
+[tool.setuptools.package-data]
+package_downloader = ["py.typed"]
+
+[build-system]
+requires = ["setuptools>=61", "setuptools_scm"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools_scm]
+version_scheme = "guess-next-dev"
+local_scheme = "node-and-date"

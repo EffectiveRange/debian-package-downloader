@@ -5,7 +5,6 @@
 import fnmatch
 from collections import OrderedDict
 from pathlib import Path
-from typing import Optional, Union
 
 from common_utility import IFileDownloader
 from context_logger import get_logger
@@ -27,10 +26,10 @@ class IAssetDownloader(object):
 
 class AssetDownloader(IAssetDownloader):
 
-    def __init__(self, file_downloader: IFileDownloader, distro_map: Optional[OrderedDict[str, str]] = None,
+    def __init__(self, file_downloader: IFileDownloader, distro_map: OrderedDict[str, str] | None = None,
                  private_dir: Path = Path('private')) -> None:
         self._file_downloader = file_downloader
-        self._distro_map = distro_map if distro_map else {}
+        self._distro_map: OrderedDict[str, str] = distro_map if distro_map else OrderedDict()
         self._private_dir = private_dir
 
     def download(self, config: ReleaseConfig, release: GitRelease, first_match_only: bool = False,
@@ -51,9 +50,9 @@ class AssetDownloader(IAssetDownloader):
                     headers['Authorization'] = f'token {config.raw_token}'
 
                 if self._distro_map:
-                    downloaded_files.extend(self._download_for_distro(asset, headers, config.is_private))
+                    downloaded_files.extend(self._download_for_distro(asset, headers, config))
                 else:
-                    downloaded_files.append(self._download(asset.url, asset.name, None, headers, config.is_private))
+                    downloaded_files.append(self._download(asset.url, asset.name, None, headers, config))
 
                 if first_match_only:
                     break
@@ -64,25 +63,30 @@ class AssetDownloader(IAssetDownloader):
 
         return downloaded_files
 
-    def _download_for_distro(self, asset: GitReleaseAsset, headers: dict[str, str], private: bool) -> list[Path]:
+    def _download_for_distro(self, asset: GitReleaseAsset, headers: dict[str, str],
+                             config: ReleaseConfig) -> list[Path]:
         for distro_matcher, distro_dir in self._distro_map.items():
             if distro_matcher in asset.name:
-                return [self._download(asset.url, asset.name, Path(distro_dir), headers, private)]
+                return [self._download(asset.url, asset.name, Path(distro_dir), headers, config)]
 
-        return self._download_and_copy(asset.url, asset.name, headers, private)
+        return self._download_and_copy(asset.url, asset.name, headers, config)
 
     @retry(wait=wait_fixed(1), stop=stop_after_attempt(3), reraise=True)
-    def _download(self, url: str, filename: str, sub_dir: Optional[Path], headers: dict[str, str],
-                  private: bool) -> Path:
-        sub_dir = self._get_sub_dir(sub_dir, private) if sub_dir else (self._private_dir if private else None)
+    def _download(self, url: str, filename: str, distro_dir: Path | None, headers: dict[str, str],
+                  config: ReleaseConfig) -> Path:
+        sub_dir = self._get_sub_dir(distro_dir, config) if distro_dir or config.is_private else None
         return self._file_downloader.download(url, filename, sub_dir, headers)
 
     @retry(wait=wait_fixed(1), stop=stop_after_attempt(3), reraise=True)
-    def _download_and_copy(self, url: str, filename: str, headers: dict[str, str], private: bool) -> list[Path]:
-        sub_dirs: list[Union[str, Path]] = [
-            self._get_sub_dir(Path(sub_dir), private) for sub_dir in self._distro_map.values()
+    def _download_and_copy(self, url: str, filename: str, headers: dict[str, str], config: ReleaseConfig) -> list[Path]:
+        sub_dirs: list[str | Path] = [
+            self._get_sub_dir(Path(distro_dir), config) for distro_dir in self._distro_map.values()
         ]
         return self._file_downloader.download_and_copy(url, sub_dirs, filename, headers)
 
-    def _get_sub_dir(self, sub_dir: Path, private: bool) -> Path:
-        return sub_dir / self._private_dir if private else sub_dir
+    def _get_sub_dir(self, distro_dir: Path | None, config: ReleaseConfig) -> Path:
+        if distro_dir:
+            component_dir = distro_dir / config.component
+            return component_dir / self._private_dir if config.private else component_dir
+        else:
+            return self._private_dir if config.private else Path()
