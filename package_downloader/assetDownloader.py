@@ -74,7 +74,7 @@ class AssetDownloader(IAssetDownloader):
     @retry(wait=wait_fixed(1), stop=stop_after_attempt(3), reraise=True)
     def _download(self, url: str, filename: str, distro_dir: Path | None, headers: dict[str, str],
                   config: ReleaseConfig) -> Path:
-        sub_dir = self._get_sub_dir(distro_dir, config) if distro_dir or config.private else None
+        sub_dir = self._get_sub_dir(distro_dir, config) if distro_dir or config.is_private else None
         return self._file_downloader.download(url, filename, sub_dir, headers)
 
     @retry(wait=wait_fixed(1), stop=stop_after_attempt(3), reraise=True)
@@ -87,6 +87,6 @@ class AssetDownloader(IAssetDownloader):
     def _get_sub_dir(self, distro_dir: Path | None, config: ReleaseConfig) -> Path:
         if distro_dir:
             component_dir = distro_dir / config.component
-            return component_dir / self._private_dir if config.private else component_dir
+            return component_dir / self._private_dir if config.is_private else component_dir
         else:
-            return self._private_dir if config.private else Path()
+            return self._private_dir if config.is_private else Path()

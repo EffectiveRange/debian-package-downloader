@@ -13,7 +13,7 @@ class ReleaseConfig(BaseModel):
     repo: str
     matcher: str = '*.deb'
     component: str = 'main'
-    private: bool = False
+    private: Optional[bool] = None
     tag: Optional[str] = None
     token: Optional[str] = None
 
@@ -21,11 +21,15 @@ class ReleaseConfig(BaseModel):
         tag = f'@{self.tag}' if self.tag else ''
         has_token = self.raw_token is not None
         return (f'ReleaseConfig(repo={self.full_name}.git{tag}, matcher={self.matcher}, component={self.component}, '
-                f'private={self.private}, has_token={has_token})')
+                f'private={self.is_private}, has_token={has_token})')
 
     @property
     def full_name(self) -> str:
         return f'{self.owner}/{self.repo}'
+
+    @property
+    def is_private(self) -> bool:
+        return self.private is True
 
     @property
     def raw_token(self) -> Optional[str]:
