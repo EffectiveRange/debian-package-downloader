@@ -9,8 +9,8 @@
 | package\_downloader/debDownloader.py     |       42 |        0 |       10 |        0 |     100% |           |
 | package\_downloader/packageConfig.py     |        7 |        0 |        0 |        0 |     100% |           |
 | package\_downloader/packageDownloader.py |       22 |        0 |        2 |        0 |     100% |           |
-| package\_downloader/releaseConfig.py     |       20 |        0 |        2 |        0 |     100% |           |
-| **TOTAL**                                |  **151** |    **0** |   **32** |    **0** | **100%** |           |
+| package\_downloader/releaseConfig.py     |       18 |        0 |        2 |        0 |     100% |           |
+| **TOTAL**                                |  **149** |    **0** |   **32** |    **0** | **100%** |           |
 
 
 ## Setup coverage badge
