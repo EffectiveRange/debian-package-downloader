@@ -60,7 +60,7 @@ class DebDownloaderTest(TestCase):
         release = MagicMock(spec=GitRelease)
         repository_provider, release_downloader, file_downloader = create_components(repository, release)
         deb_downloader = DebDownloader(repository_provider, release_downloader, file_downloader)
-        release_config = ReleaseConfig(owner='owner1', repo='repo1', matcher='*.deb')
+        release_config = ReleaseConfig(owner='owner1', repo='repo1', matcher='*.deb', token='${TEST_TOKEN}')
         package_config = PackageConfig(package='package2', version='1.0.0', release=release_config)
 
         # When
@@ -105,12 +105,12 @@ class DebDownloaderTest(TestCase):
 
 def create_components(repository: Optional[Repository] = None, release: Optional[GitRelease] = None):
     if repository:
-        repository._full_name = 'owner1/repo1'
+        repository.full_name = 'owner1/repo1'
         repository.get_release.return_value = release
         repository.get_latest_release.return_value = release
 
     if release:
-        release._tag_name = 'v1.0.0'
+        release.tag_name = 'v1.0.0'
 
     repository_provider = MagicMock(spec=IRepositoryProvider)
     repository_provider.get_repository.return_value = repository
