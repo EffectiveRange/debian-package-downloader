@@ -25,6 +25,35 @@ class ReleaseConfigTest(TestCase):
         # Then
         self.assertEqual('owner1/repo1', full_name)
 
+    def test_returns_is_private_when_not_set(self):
+        # Given
+        config = ReleaseConfig(owner='owner1', repo='repo1', tag='v1.0.0', matcher='*.deb', token='token1')
+
+        is_private = config.is_private
+
+        # Then
+        self.assertFalse(is_private)
+
+    def test_returns_is_private_when_true(self):
+        # Given
+        config = ReleaseConfig(owner='owner1', repo='repo1', tag='v1.0.0', matcher='*.deb', token='token1',
+                               private=True)
+
+        is_private = config.is_private
+
+        # Then
+        self.assertTrue(is_private)
+
+    def test_returns_is_private_when_false(self):
+        # Given
+        config = ReleaseConfig(owner='owner1', repo='repo1', tag='v1.0.0', matcher='*.deb', token='token1',
+                               private=False)
+
+        is_private = config.is_private
+
+        # Then
+        self.assertFalse(is_private)
+
     def test_returns_raw_token(self):
         # Given
         config = ReleaseConfig(owner='owner1', repo='repo1', tag='v1.0.0', matcher='*.deb', token='token1')
